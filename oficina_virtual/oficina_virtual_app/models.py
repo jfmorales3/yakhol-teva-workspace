@@ -33,3 +33,69 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+class Comercial(models.Model):
+    identificacion = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=200)
+    telefono = models.CharField(max_length=200)
+    correo = models.EmailField()
+    ciudad = models.CharField(max_length=200)
+    lider = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+
+class Contrato(models.Model):
+    id_contrato = models.CharField(max_length=200, primary_key=True)
+    tipo_contrato = models.CharField(max_length=200)
+    id_asociado = models.ForeignKey('Asociado', on_delete=models.CASCADE)
+    tipo_semana = models.ForeignKey('TipoSemana', on_delete=models.CASCADE)
+    id_comercial = models.ForeignKey('Comercial', on_delete=models.CASCADE)
+    valor_semana = models.IntegerField()
+    valor_pagado = models.IntegerField()
+    saldo_restante = models.IntegerField()
+    semana = models.CharField(max_length=200)
+
+class Pago(models.Model):
+    rc = models.IntegerField(primary_key=True)
+    id_contrato = models.ForeignKey('Contrato', on_delete=models.CASCADE)
+    fecha_pago = models.DateField()
+    destino = models.CharField(max_length=200)
+    valor = models.IntegerField()
+    cuota_administrativa = models.IntegerField()
+    numero_cuenta = models.CharField(max_length=200)
+    tipo_pago = models.CharField(max_length=200)
+    pagos_id = models.IntegerField()
+    asociado = models.ForeignKey('Asociado', on_delete=models.CASCADE, related_name='pagos_rel')
+
+
+
+
+class Comision(models.Model):
+    id = models.AutoField(primary_key=True)
+    comercial = models.ForeignKey('Comercial', on_delete=models.CASCADE)
+    contrato = models.ForeignKey('Contrato', on_delete=models.CASCADE)
+    nivel = models.IntegerField()
+    valor_efectivo = models.IntegerField()
+    valor_tokens = models.IntegerField()
+
+class Asociado(models.Model):
+    numero_documento = models.IntegerField(primary_key=True)
+    tipo_documento = models.CharField(max_length=200)
+    lugar_expedicion = models.CharField(max_length=200)
+    nombre_completo = models.CharField(max_length=200)
+    telefono = models.CharField(max_length=200)
+    direccion = models.CharField(max_length=200)
+    ciudad = models.CharField(max_length=200)
+    correo = models.EmailField()
+    ocupacion = models.CharField(max_length=200)
+    contratos = models.ManyToManyField('Contrato')
+    pagos = models.ManyToManyField('Pago', related_name='asociados_rel')
+    tipo_semana = models.ForeignKey('TipoSemana', on_delete=models.CASCADE)
+    tipo_asociado = models.CharField(max_length=200)
+    last_modified = models.DateTimeField()
+    deuda_total = models.IntegerField()
+
+class TipoSemana(models.Model):
+    id = models.IntegerField(primary_key=True)
+    tipo_semana = models.CharField(max_length=200)
+    valor = models.IntegerField()
+    contratos = models.ManyToManyField('Contrato')
+    asociados = models.IntegerField()
