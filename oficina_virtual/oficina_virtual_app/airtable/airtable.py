@@ -1,8 +1,7 @@
 from airtable import Airtable
 
 # tus claves
-base_key = 'apptkevjIOV2QLtos'
-api_key = 'keyMxHRVe4JVxyanz'
+
 
 # Inicializa las tablas
 airtable_comerciales = Airtable(base_key, 'tblTPSfrSDPUGZfzX', api_key)
